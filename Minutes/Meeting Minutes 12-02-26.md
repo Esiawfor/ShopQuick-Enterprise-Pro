@@ -2,12 +2,14 @@ Team Role Allocation Meeting: 12/02/26
 
 Time: 9:00 – 10:00
 Attendance = Ziean, Fahd, Ian, Elias, Fida
+
 Absence: No Absences 
 
 --Documentation--
 
 
 Fida Rahman(23011135):
+
   - Project brief
   - Team expertise & rationale for topic choice
   - Literature review
@@ -16,12 +18,14 @@ Fida Rahman(23011135):
 
 
 Ian Muendo(24010965):
+
     - Data description
     - Interface design
     - Work plan - Gantt Chart
    
     
 Fahd Mahmood(22010258):
+
     - LSEPI reflection
     - Peer review
     - Documentation review
@@ -30,6 +34,7 @@ Fahd Mahmood(22010258):
 
  
  Elias Siaw-Fordjour(23015449):
+ 
    - Used data provided by client to create the data needed for market prices
    - Used React and JavaScript to create the logic
 
