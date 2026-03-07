@@ -37,6 +37,7 @@ Fahd Mahmood(22010258):
  
    - Used data provided by client to create the data needed for market prices
    - Used React and JavaScript to create the logic
+   - basket engine
 
 Mohammed "Ziean" Khurram(23021580):
   - Used the logic to create the visuals of the project
