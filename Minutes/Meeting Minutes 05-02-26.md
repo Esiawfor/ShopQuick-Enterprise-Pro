@@ -1,6 +1,7 @@
 Client Meeting: 05/02/26
 Time: 9:30 am – 10:40 am
 Attendance = Ziean, Fahd, Ian, Elias, Fida
+
 Absence: No Absences 
 
 -	Discussed the scope and requirements, constraints, the colouring, whether it was a mobile or web application
