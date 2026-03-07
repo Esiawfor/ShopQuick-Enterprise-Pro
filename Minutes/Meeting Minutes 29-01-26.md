@@ -7,7 +7,7 @@ Attendance = Ziean, Fahd, Ian, Elias, Fida
 Absence: No Absences 
 
 -	Discussed the project
--	Got allocated project No. 2 
+-	Got allocated project No. 3
 -	Scope of the project
 -	Discussion of what to create a web application or app
 
