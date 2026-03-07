@@ -1,6 +1,7 @@
 First Meeting: 29/01/26
 Time: 9:10am - 10:30am
 Attendance = Ziean, Fahd, Ian, Elias, Fida
+
 Absence: No Absences 
 
 -	Discussed the project
