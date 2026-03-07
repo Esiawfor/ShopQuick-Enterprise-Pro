@@ -1,5 +1,7 @@
 Client Meeting: 05/02/26
+
 Time: 9:30 am – 10:40 am
+
 Attendance = Ziean, Fahd, Ian, Elias, Fida
 
 Absence: No Absences 
