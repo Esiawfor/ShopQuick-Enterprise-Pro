@@ -19,4 +19,4 @@ Absence: No Absences
 - Are there any features that should not be left out?
 
 Meeting Overview
-The client discussed what the scope and requirements are and how they should be met. Additionally, information was also provided on the constraints and the website theme and most answered were answered. 
+The client discussed what the scope and requirements are and how they should be met. Additionally, information was also provided on the constraints and the website theme and most answers were answered. 
