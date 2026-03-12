@@ -6,4 +6,4 @@ Attendance = Ziean, Fahd, Ian, Elias, Fida
 
 Absence: No Absences
 
-Last few checks and putting everyhting together before presentation and submition.
+Last few checks and putting everything together before presentation and submission.
