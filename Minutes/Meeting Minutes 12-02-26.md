@@ -13,7 +13,7 @@ Fida Rahman(23011135):
   - Project brief
   - Team expertise & rationale for topic choice
   - Literature review
-  - Fucntional & non-fucntional requirements
+  - Functional & non-functional requirements
 
 
 
@@ -37,8 +37,8 @@ Fahd Mahmood(22010258):
  
    - Used data provided by client to create the data needed for market prices
    - Used React and JavaScript to create the logic
-   - basket engine
+   - Basket engine
 
-Mohammed "Ziean" Khurram(23021580):
+Mohammed Ziean Khurram(23021580):
   - Used the logic to create the visuals of the project
-  - Tried meeting the client's requirements of what ot should look like
+  - Tried meeting the client's requirements of what it should look like
