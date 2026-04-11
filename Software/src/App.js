@@ -56,6 +56,18 @@ function App() {
     setLoading(false);
   };
 
+  const [isListening, setIsListening] = useState(false);
+
+  const handleVoiceInput = () => {
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      alert("Your browser doesn't support voice to text feature. Try Google Chrome instead. ")
+    }
+
+    const recognition = new SpeechRecognition
+  }
   return (
     <>
       <header className='app-header'>
