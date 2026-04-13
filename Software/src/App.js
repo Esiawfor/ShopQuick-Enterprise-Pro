@@ -1,5 +1,5 @@
 //importing useState from React so we can store and upadte data on the page
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 //import{GroceryItems, STORES} from './data/mockPrices';
 import { processShoppingRequest } from './logic/basketEngine';
 import './App.css'
@@ -16,6 +16,18 @@ function App() {
   // we use this to show the comparing message
   const [loading, setLoading] = useState(false);
 
+  const [mealType, setMealType] = useState('dinner');
+
+  const [savedLists, setSavedLists] = useState([]);
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('shopquick_lists');
+    if(saved) {
+      setSavedLists(JSON.parse(saved));
+    }
+  }, []);
 
   const EXAMPLES = [
     '£10',
@@ -37,7 +49,7 @@ function App() {
     //adds a small delay to simulate the AI processing the request
     setTimeout(() => {
       //call our backend function with whatever the user typed
-      const res = processShoppingRequest(query);
+      const res = processShoppingRequest(query, postcode);
       //save the results so the UI can display it
       setResult(res);
       // turn off loading message now that have results
@@ -56,6 +68,30 @@ function App() {
     setLoading(false);
   };
 
+  const handleSaveList = () => {
+    const newEntry = {
+      id: Date.now(),
+      mealType,
+      query,
+      result,
+      savedAt: new Date().toLocaleDateString('en-GB')
+    };
+  
+    const updated = [newEntry, ...savedLists];
+    setSavedLists(updated);
+    localStorage.setItem('shopquick_lists', JSON.stringify(updated));
+    setIsDrawerOpen(true);
+  };
+  
+  const handleDeleteList = (idToDelete) => {
+
+    const updated = savedLists.filter((entry) => entry.id !== idToDelete);
+
+    setSavedLists(updated);
+
+    localStorage.setItem('shopquick_lists', JSON.stringify(updated))
+    };
+
   const [isListening, setIsListening] = useState(false);
 
   const handleVoiceInput = () => {
@@ -67,6 +103,30 @@ function App() {
     }
 
     const recognition = new SpeechRecognition
+
+    recognition.lang = 'en-GB';
+
+    recognition.continuous = false;
+
+    recognition.interimResults = false;
+
+    recognition.start()
+    setIsListening(true);
+
+    recognition.onresult = (event) => {
+      const spokenText = event.results[0][0].transcript;
+      setQuery(spokenText);
+      setIsListening(false);
+    }
+
+    recognition.onerror = () => {
+      setIsListening(false);
+      alert("Couldn't hear anything. Please check your microphone is on and working! ")
+    }
+
+    recognition.onend = () => {
+      setIsListening(false);
+    }
   }
   return (
     <>
@@ -77,13 +137,33 @@ function App() {
         <p className='app-subtitle'>
           Tell us what you need and we'll find the cheapest basket near you.
         </p>
+        <button className='drawer-trigger' onClick={() => setIsDrawerOpen(true)}>
+          Saved Lists {savedLists.length > 0 && (
+            <span className='saved-count'>{savedLists.length}</span>
+          )}
+        </button>
       </header>
 
       <div className='app-wrapper'>
 
       <div className='search-card'>
         <p className='search-card-label'>Your Shopping Request</p>
-
+      
+      <div className='meal-selector'>
+        <p className='search-card-label'>This shop is for...</p>
+        <div className='meal-options'>
+          {['dinner', 'lunch', 'other'].map((type) => (
+            <button
+            key={type}
+            className={`meal-btn ${mealType === type ? 'meal-btn-active' : ''}`}
+            onClick={() => setMealType(type)}
+            >
+            {type === 'dinner' ? '🍽️' : type === 'lunch' ? '🥗' : '🛒'} 
+            {type.charAt(0).toUpperCase() + type.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
         <div className='input-group'>
           <input
           className='postcode-input'
@@ -91,16 +171,26 @@ function App() {
           onChange={(e) => setPostcode(e.target.value)}
           placeholder='Postcode'
           />
-
+          <div style={{ position: 'relative'}}>
           <textarea 
           className='query-textarea' 
           value={query} 
           onChange={(e) => setQuery(e.target.value)}
           placeholder='e.g. "£40 budget, chicken, rice and eggs"'
           rows={3}
+          style={{paddingRight: '48px'}}
           />
         </div>
-
+        </div>
+      
+        <button
+        onClick={handleVoiceInput}
+        title="Click to speak your shopping list"
+        className={`mic-button ${isListening ? 'listening' : ''}`}
+        >
+        {isListening ? '🔴' : '🎤'}
+        </button>
+        
         <button className='search-button' onClick={handleSearch}>
           🔍Find cheapest basket
           </button>
@@ -168,7 +258,9 @@ function App() {
               <th>Rank</th>
               <th>Store</th>
               <th>Total</th>
+              <th>Distance</th>
               <th>vs Cheapest</th>
+              <th>vs Closest</th>
             </tr>
           </thead>
           <tbody>
@@ -187,10 +279,18 @@ function App() {
                 <td>{basket.store.name}</td>
 
                 <td className='price-bold'>£{basket.total.toFixed(2)}</td>
+
+                <td>{basket.distance.toFixed(1)} miles</td>
                 <td>
                   {i === 0
                   ? <span className='cheapest-label'> CHEAPEST</span>
                 : <span className='extra-cost'>+£{basket.extra.toFixed(2)}</span>
+                }
+                </td>
+                <td>
+                  {basket.extraDistance === 0
+                  ? <span className='closest-label'> CLOSEST</span>
+                : <span className='extra-distance'>+{basket.extraDistance.toFixed(1)} mi</span>
                 }
                 </td>
               </tr>
@@ -207,10 +307,57 @@ function App() {
       </div>
     )}
     
+    {result.success && (
+      <button className='save-button' onClick={handleSaveList}>
+        Save this {mealType} list
+      </button>
+    )}
     </div>
       )}
 
       </div>
+
+      {isDrawerOpen && (
+        <div className='drawer-overlay' onClick={() => setIsDrawerOpen(false)} />
+      )}
+
+      <div className={`saved-drawer ${isDrawerOpen ? 'drawer-open' : ''}`}>
+
+        <div className='drawer-header'>
+          <h2>Saved Lists</h2>
+          <button className='drawer-close' onClick={() => setIsDrawerOpen(false)}>x</button>
+        </div>
+
+        {savedLists.length === 0 && (
+          <p className='drawer-empty'>No saved lists yet! Run a search and press Save</p>
+        )}
+
+        {savedLists.map((entry) => (
+          <div key={entry.id} className='saved-entry'>
+            <div className='saved-entry-header'>
+              <span className='saved-meal-badge'>
+                {entry.mealType === 'dinner' ? '🍽️' : entry.mealType === 'lunch' ? '🥗' : '🛒'}
+                {entry.mealType.charAt(0).toUpperCase() + entry.mealType.slice(1)}
+              </span>
+              <span className='saved-date'>"{entry.savedAt}</span>
+              <button
+                className='delete-btn'
+                onClick={() => handleDeleteList(entry.id)}
+                title='Delete this list'
+                >
+                🗑️
+                </button>
+            </div>
+            <p className='saved-query'>"{entry.query}"</p>
+            {entry.result.baskets?.[0] && (
+              <p className='saved-cheapest'>
+                Cheapest: <strong>{entry.result.baskets[0].store.name}</strong> - £{entry.result.baskets[0].total.toFixed(2)}
+              </p>
+            )}
+      </div>
+        ))}
+
+    </div>
     </>
   );
 }

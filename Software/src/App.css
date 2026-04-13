@@ -424,6 +424,20 @@ body {
   font-weight: 500;
 }
 
+.closest-label {
+  background: var(--orange-main);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.extra-distance {
+  color: #C0392B;
+  font-weight: 500;
+}
+
 .price-bold {
   font-weight: 700;
   font-size: 1rem;
@@ -439,7 +453,231 @@ body {
   animation: slideIn 0.3s ease;
 }
 
+
+.mic-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: white;
+  border: 2px solid var(--orange-border);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.mic-button.listening {
+  background: var(--orange-main);
+}
+
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0);}
 }
+
+.meal-selector {
+  margin-bottom: 20px;
+}
+
+.meal-options{
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.meal-btn{
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 2px solid var(--orange-border);
+  background: var(--orange-pale);
+  color: var(--text-dark);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.meal-btn:hover {
+  border-color: var(--orange-main);
+  color: var(--orange-main);
+}
+
+.meal-btn-active {
+  background: var(--orange-main);
+  border-color: var(--orange-main);
+  color: white;
+}
+
+.save-button {
+  width: 100%;
+  padding: 13px;
+  background: white;
+  color: var(--orange-main);
+  border: 2px solid var(--orange-main);
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-button:hover{
+  background: var(--orange-pale);
+}
+
+.drawer-trigger {
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.5);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  transition: background 0.2s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.drawer-trigger:hover {
+  background: rgba(255,255,255,0.3);
+}
+
+.saved-count {
+  background: white;
+  color: var(--orange-main);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 100;
+}
+
+.saved-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 340px;
+  background: white;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+  z-index: 101;
+  padding: 24px 20px;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.saved-drawer.drawer-open {
+  transform: translateX(0);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--orange-border);
+}
+
+.drawer-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.drawer-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--text-mid);
+}
+
+.drawer-empty {
+  color: var(--text-mid);
+  font-size: 0.88rem;
+  text-align: center;
+  margin-top: 40px;
+  line-height: 1.6;
+}
+
+.saved-entry {
+  background: var(--orange-pale);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 12px;
+  border: 1.5px solid var(--orange-border);
+}
+
+.saved-entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.saved-meal-badge {
+  background: var(--orange-main);
+  color: white;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.saved-date {
+  font-size: 0.75rem;
+  color: var(--text-mid);
+}
+
+.saved-query {
+  font-size: 0.83rem;
+  color: var(--text-dark);
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.saved-cheapest {
+  font-size: 0.83rem;
+  color: var(--text-mid);
+}
+
+.saved-cheapest strong{
+  color: var(--orange-main);
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.5;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.delete-btn:hover{
+  opacity: 1;
+  transform: scale(1.2);
+}
+
