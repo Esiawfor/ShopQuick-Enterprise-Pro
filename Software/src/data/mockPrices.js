@@ -13,6 +13,14 @@ export const STORES = [
   { id: "iceland", name: "Iceland" },
 ];
 
+export const STORE_DISTANCES = {
+  'BD1': { tesco: 0.8, asda: 2.1, sainsburys: 3.4, aldi: 1.2, lidl: 4.1 },
+  'BD2': { tesco: 1.5, asda: 0.9, sainsburys: 2.8, aldi: 3.1, lidl: 1.8},
+  'LS1': { tesco: 1.2, asda: 3.5, sainsburys: 0.7, aldi: 2.9, lidl: 3.3},
+  'LS2': { tesco: 2.3, asda: 1.1, sainsburys: 1.9, aldi: 0.8, lidl: 2.6},
+  'DEFAULT': { tesco: 2.0, asda: 2.5, sainsburys: 3.0, aldi: 1.8, lidl: 3.5},
+};
+
 export const PRICES = {
   aldi: {
     "apples_6_pack": { name: "Apples 6 Pack", price: 1.59 },
