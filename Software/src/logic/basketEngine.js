@@ -87,7 +87,8 @@ function matchItems(text) {
   const usedKeys = new Set(); // stops same product matching twice
 
   for (const [keyword, normalizedKeys] of Object.entries(KEYWORD_MAP)) {
-    if (!lowerText.includes(keyword)) continue;
+    const wordMatch = new RegExp(`\\b${keyword}\\b`);
+    if(!wordMatch.test(lowerText)) continue;
 
     // Try each possible normalized key until we find one that exists in the data
     for (const key of normalizedKeys) {
@@ -139,7 +140,7 @@ function calcBaskets(items, postcode) {
     };
   })
   // Only include stores that have at least one item
-  .filter(b => b.foundCount > 0)
+  .filter(b => b.foundCount === items.length)
   // Sort cheapest first
   .sort((a, b) => a.total - b.total);
   // Add rank and how much extra vs cheapest
