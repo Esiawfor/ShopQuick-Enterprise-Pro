@@ -3,6 +3,7 @@ import {useState, useEffect} from 'react';
 //import{GroceryItems, STORES} from './data/mockPrices';
 import { processShoppingRequest } from './logic/basketEngine';
 import './App.css'
+import logo from './logo.png';
 
 const AVATAR_OPTIONS = ['👩', '👨']; 
 
@@ -239,8 +240,9 @@ function App() {
   return ( // we return the JSX that defines the UI of our app, using the state variables and event handlers we defined 
             // above to create an interactive experience for the user
     <>
-      /*   Header Section with title, subtitle and buttons for profile and saved lists   */
+      {/*   Header Section with title, subtitle and buttons for profile and saved lists   */}
       <header className='app-header'>
+         <title>ShopQuick</title>
         <h1 className='app-title' onClick={handleReset} style={{ cursor: 'pointer' }}>
             🛒 ShopQuick
         </h1>
@@ -283,7 +285,7 @@ function App() {
         </div>
       </div>
 
-          /*   Input group with postcode and query input, and voice input button   */
+          {/*   Input group with postcode and query input, and voice input button   */}
         <div className='input-group'>
           <input
           className='postcode-input'
@@ -347,7 +349,7 @@ function App() {
           </div>
       )}
 
-        /*   Results Section, shows the AI summary, list of items found and store comparison table   */
+        {/*   Results Section, shows the AI summary, list of items found and store comparison table   */}
       {result && !loading && (
         <div className='results-section'>
 
@@ -370,10 +372,10 @@ function App() {
       </div>
     )}
 
-    /* we only show the store comparison table if there are any baskets in the results, which means the AI was able to find 
+    {/* we only show the store comparison table if there are any baskets in the results, which means the AI was able to find 
     prices for some of the items and compare them across stores. If there are no baskets, it means the AI couldn't find any prices 
     for the items, and we can show an error message instead. This way we avoid showing an empty or confusing table when there are 
-    no results to compare. */
+    no results to compare. */}
     {result.baskets && result.baskets.length > 0 && (
       <div className='comparison-card'>
         <h2> Store Comparison</h2>
