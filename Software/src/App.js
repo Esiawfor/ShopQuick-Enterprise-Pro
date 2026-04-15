@@ -250,7 +250,7 @@ function App() {
           Tell us what you need and we'll find the cheapest basket near you.
         </p>
         <div className='header-buttons'>
-          <button className='drawer-trigger' onClick={() => setIsProfileOpen(true)}>
+          <button className='drawer-trigger' onClick={() => setIsProfileOpen(true)}> 
             <span>{profile.avatar}</span>
             {profile.name ? profile.name : 'My Profile'}
           </button>
@@ -290,14 +290,16 @@ function App() {
           <input
           className='postcode-input'
           value={postcode}
-          onChange={(e) => setPostcode(e.target.value)}
+          onChange={(e) => setPostcode(e.target.value)} // we bind the value of the postcode input to the postcode state, and 
+          // update that state when the user types in the input, so that we can use the postcode for searches and show it in the input
           placeholder='Postcode'
           />
         <div style={{ position: 'relative'}}>
           <textarea 
           className='query-textarea' 
           value={query} 
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => setQuery(e.target.value)} // we use a textarea for the query input to allow for multi-line input and 
+          // better display of longer queries, and we style it to have some padding on the right to make room for the mic button
           placeholder='e.g. "£40 budget, chicken, rice and eggs"'
           rows={3}
           style={{paddingRight: '48px'}}
@@ -309,6 +311,8 @@ function App() {
         title="Click to speak your shopping list"
         className={`mic-button ${isListening ? 'listening' : ''}`}
         >
+          {/* we can change the icon or color of the mic button based on whether the app is currently listening for voice input,
+           to give the user visual feedback about the state of the voice input feature */}
           {isListening ? '🔴' : '🎤'}
         </button> 
         </div>
@@ -443,22 +447,33 @@ function App() {
       )}
       </div>
 
-
+        {/*   Profile Drawer   */}
       {isProfileOpen && (
         <div className='drawer-overlay' onClick={() => {
-          setIsProfileOpen(false);
-          setIsEditingProfile(false);
-          setProfileDraft({ ...profile});
+          setIsProfileOpen(false); // when the user clicks outside the drawer, we close the drawer and cancel 
+          // any edits by resetting the profileDraft to the current profile information and exiting edit mode
+          setIsEditingProfile(false);// we also make sure to exit edit mode if the user clicks outside the drawer, 
+          // so that if they were in the middle of editing their profile and click away,
+          setProfileDraft({ ...profile});// we reset the profileDraft to the current profile information, 
+          // so that if they come back to edit again,
         }} />
       )}
-
+        {/* we show the drawer overlay when the profile drawer is open, and clicking on it will 
+        close the drawer and cancel any edits, by resetting the profileDraft to the current profile information and exiting edit mode */}
       <div className={`saved-drawer ${isProfileOpen ? 'drawer-open' : ''}`}>
         <div className='drawer-header'>
           <h2>My Profile</h2>
           <button className='drawer-close' onClick={() => {
-            setIsProfileOpen(false);
-            setIsEditingProfile(false);
-            setProfileDraft({ ...profile});
+            setIsProfileOpen(false); // when the user clicks the close button, we also close the drawer and cancel any edits by 
+            // resetting the profileDraft to the current profile information and exiting edit mode
+
+            setIsEditingProfile(false);// we also make sure to exit edit mode if the user clicks the close button, 
+            // so that if they were in the middle of editing their profile and click close, they don't lose their current profile info 
+            // and can come back to edit again if they want to without their unsaved changes still being there when they open the drawer again 
+
+            setProfileDraft({ ...profile}); // we reset the profileDraft to the current profile information, 
+            // so that if they come back to edit again, they see their actual saved 
+            // information in the input fields instead of any unsaved changes they had before
           }}>x</button>
         </div>
       </div>
@@ -491,7 +506,7 @@ function App() {
           </div>
           
           <button className='search-button' style={{ marginTop: '20px'}}
-          onClick={() => setIsEditingProfile(true)}>
+          onClick={() => setIsEditingProfile(true)}> //
             Edit Profile
           </button>        
         </div>
@@ -504,7 +519,8 @@ function App() {
           {/* Choose Avatar */}
           <p className='search-card-label' style={{ marginBottom: '10px'}}>Choose your avatar</p>
           <div className='avatar-picker'>
-            {AVATAR_OPTIONS.map(emoji => (
+            {AVATAR_OPTIONS.map(emoji => ( // we show the avatar options as buttons with the emoji, and highlight the one that is 
+            // currently selected in the profileDraft state, so the user can see which one they have chosen while editing
               <button key={emoji} className={`avatar-option ${profileDraft.avatar === emoji ? 'avatar-selected' : ''}`}
               onClick={() => setProfileDraft(prev => ({ ...prev, avatar:emoji }))}
             > {emoji}
@@ -512,11 +528,14 @@ function App() {
             ))}
           </div>
           
-          <p className='search-card-label' style={{ marginBottom: '18px', marginBottom: '6px'}}>Your Name</p>
+          <p className='search-card-label' style={{ marginBottom: '18px', marginBottom: '6px'}}>Your Name</p> 
           <input className='postcode-input'
           style={{ width: '100%'}}
-          value={profileDraft.name}
-          onChange={(e) => setProfileDraft(prev => ({ ...prev, name: e.target.value}))}
+          value={profileDraft.name} // we use profileDraft.name as the value of the name input, 
+                                    // so that when the user types in it, they are updating the profileDraft state 
+                                    // and can see their changes in real time
+          onChange={(e) => setProfileDraft(prev => ({ ...prev, name: e.target.value}))} // we update the name field in the 
+                    // profileDraft state when the user types in the name input, so that they can see their changes as they make them
           placeholder='e.g. Mark'
           />
 
@@ -580,12 +599,13 @@ function App() {
             <div className='saved-entry-header'>
               <span className='saved-meal-badge'>
                 {entry.mealType === 'dinner' ? '🍽️' : entry.mealType === 'lunch' ? '🥗' : '🛒'}
-                {entry.mealType.charAt(0).toUpperCase() + entry.mealType.slice(1)}
+                {entry.mealType.charAt(0).toUpperCase() + entry.mealType.slice(1)} 
               </span>
               <span className='saved-date'>"{entry.savedAt}</span>
               <button
                 className='delete-btn'
-                onClick={() => handleDeleteList(entry.id)}
+                onClick={() => handleDeleteList(entry.id)} // when the user clicks the delete button on a saved entry, 
+                // we call the handleDeleteList function with that entry's id to remove it from their saved lists
                 title='Delete this list'
                 >
                 🗑️
@@ -593,7 +613,7 @@ function App() {
             </div>
             <p className='saved-query'>"{entry.query}"</p>
             {entry.result.baskets?.[0] && (
-              <p className='saved-cheapest'>
+              <p className='saved-cheapest'> 
                 Cheapest: <strong>{entry.result.baskets[0].store.name}</strong> - £{entry.result.baskets[0].total.toFixed(2)}
               </p>
             )}
