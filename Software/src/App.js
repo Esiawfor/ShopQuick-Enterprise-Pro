@@ -4,6 +4,9 @@ import {useState, useEffect} from 'react';
 import { processShoppingRequest } from './logic/basketEngine';
 import './App.css'
 
+const AVATAR_OPTIONS = ['👩', '👨'];
+
+const DIETARY_OPTIONS = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Halal']
 function App() {
   // stores whatever the user has typed in the serch box
   const [query, setQuery] = useState('');
@@ -22,12 +25,50 @@ function App() {
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
+
+
+  const [profile, setProfile] = useState({
+    name: '',
+    avatar: '🧑',
+    dietary: [],
+    postcode: 'BD1 1AA',
+  });
+
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  const[isEditingProfile, setIsEditingProfile] = useState(false);
+
+  const[profileDraft, setProfileDraft] = useState({ ...profile});
   useEffect(() => {
-    const saved = localStorage.getItem('shopquick_lists');
-    if(saved) {
-      setSavedLists(JSON.parse(saved));
+    const savedRaw = localStorage.getItem('shopquick_lists');
+    if(savedRaw) setSavedLists(JSON.parse(savedRaw));
+
+    const savedProfile = localStorage.getItem('shopquick_profile');
+    if(savedProfile){
+      const parsed = JSON.parse(savedProfile);
+      setProfile(parsed);
+      setProfileDraft(parsed);
+
+      if (parsed.postcode) setPostcode(parsed.postcode);
     }
   }, []);
+
+  const handleSaveProfile = () => {
+    setProfile(profileDraft);
+    localStorage.getItem('shopquick_profile', JSON.stringify(profileDraft));
+    if(profileDraft.postcode) setPostcode(profileDraft.postcode);
+    setIsEditingProfile(false);
+  };
+
+  const handleToggleDietary = (option) => {
+    setProfileDraft(prev => {
+      const already = prev.dietary.includes(option);
+      return{
+        ...prev,
+        dietary: already ? prev.dietary.filter(d => d !== option) : [...prev.dietary, option],
+      };
+    });
+  };
 
   const EXAMPLES = [
     '£10',
@@ -63,7 +104,7 @@ function App() {
 
   const handleReset = () => {
     setQuery('');
-    setPostcode('BD1 1AA');
+    setPostcode(profile.postcode || 'BD1 1AA');
     setResult(null);
     setLoading(false);
   };
@@ -71,9 +112,7 @@ function App() {
   const handleSaveList = () => {
     const newEntry = {
       id: Date.now(),
-      mealType,
-      query,
-      result,
+      mealType, query, result,
       savedAt: new Date().toLocaleDateString('en-GB')
     };
   
@@ -137,13 +176,21 @@ function App() {
         <p className='app-subtitle'>
           Tell us what you need and we'll find the cheapest basket near you.
         </p>
-        <button className='drawer-trigger' onClick={() => setIsDrawerOpen(true)}>
-          Saved Lists {savedLists.length > 0 && (
-            <span className='saved-count'>{savedLists.length}</span>
-          )}
-        </button>
-      </header>
+        <div className='header-buttons'>
+          <button className='drawer-trigger' onClick={() => setIsProfileOpen(true)}>
+            <span>{profile.avatar}</span>
+            {profile.name ? profile.name : 'My Profile'}
+          </button>
 
+          <button className='drawer-trigger' onClick={() => setIsDrawerOpen(true)}>
+            Saved Lists
+            {savedLists.length > 0 && (
+              <span className='saved-count'>{savedLists.length}</span>
+            )}
+          </button>
+        </div>
+      </header>
+                        {/*      Main Content */     } 
       <div className='app-wrapper'>
 
       <div className='search-card'>
@@ -164,6 +211,8 @@ function App() {
           ))}
         </div>
       </div>
+
+
         <div className='input-group'>
           <input
           className='postcode-input'
@@ -171,7 +220,7 @@ function App() {
           onChange={(e) => setPostcode(e.target.value)}
           placeholder='Postcode'
           />
-          <div style={{ position: 'relative'}}>
+        <div style={{ position: 'relative'}}>
           <textarea 
           className='query-textarea' 
           value={query} 
@@ -180,28 +229,30 @@ function App() {
           rows={3}
           style={{paddingRight: '48px'}}
           />
-        </div>
-        </div>
+
       
         <button
         onClick={handleVoiceInput}
         title="Click to speak your shopping list"
         className={`mic-button ${isListening ? 'listening' : ''}`}
         >
-        {isListening ? '🔴' : '🎤'}
-        </button>
-        
+          {isListening ? '🔴' : '🎤'}
+        </button> 
+        </div>
+        </div>
         <button className='search-button' onClick={handleSearch}>
           🔍Find cheapest basket
           </button>
       </div>
-
+      
+      {/*   loading state   */}
       {loading && (
         <div className='loading-box'>
           <div className='spinner'></div>
           <p> Comparing prices across 5 supermarkets... </p>
           </div>
       )}
+
       {/* this is for empty state, any items that havent been added in */}
       {!loading && !result && (
         <div className='empty-state'>
@@ -314,8 +365,124 @@ function App() {
     )}
     </div>
       )}
-
       </div>
+
+
+      {isProfileOpen && (
+        <div className='drawer-overlay' onClick={() => {
+          setIsProfileOpen(false);
+          setIsEditingProfile(false);
+          setProfileDraft({ ...profile});
+        }} />
+      )}
+
+      <div className={`saved-drawer ${isProfileOpen ? 'drawer-open' : ''}`}>
+        <div className='drawer-header'>
+          <h2>My Profile</h2>
+          <button className='drawer-close' onClick={() => {
+            setIsProfileOpen(false);
+            setIsEditingProfile(false);
+            setProfileDraft({ ...profile});
+          }}>x</button>
+        </div>
+      </div>
+        
+      
+      {/* View Mode */}
+      {!isEditingProfile && (
+        <div className='profile-view'>
+
+          <div className='profile-avatar-display'>{profile.avatar}</div>
+
+          <h3 className='profile-name'>
+            {profile.name || 'No name set'}
+          </h3>
+
+          <div className='profile-info-row'>
+            <span className='profile-info-label'> Postcode</span>
+            <span className='profile-info-value'>{profile.postcode || '-'}</span>
+          </div>
+
+          <div className='profile-info-row'>
+            <span className='profile-info-label'>Dietary</span>
+            <div className='profile-dietary-tags'>
+              {profile.dietary.length > 0 ? profile.dietary.map(d => (
+                <span key={d} className='item-tag'>{d}</span>
+              ))
+              : <span style={{ color: 'var(--text-mid)', fontSize: '0.85rem'}}></span>
+            }
+            </div>
+          </div>
+          
+          <button className='search-button' style={{ marginTop: '20px'}}
+          onClick={() => setIsEditingProfile(true)}>
+            Edit Profile
+          </button>        
+        </div>
+      )}
+
+      {/* Edit Mode */}
+      {isEditingProfile && (
+        <div className='profile-edit'>
+
+          {/* Choose Avatar */}
+          <p className='search-card-label' style={{ marginBottom: '10px'}}>Choose your avatar</p>
+          <div className='avatar-picker'>
+            {AVATAR_OPTIONS.map(emoji => (
+              <button key={emoji} className={`avatar-option ${profileDraft.avatar === emoji ? 'avatar-selected' : ''}`}
+              onClick={() => setProfileDraft(prev => ({ ...prev, avatar:emoji }))}
+            > {emoji}
+            </button>
+            ))}
+          </div>
+          
+          <p className='search-card-label' style={{ marginBottom: '18px', marginBottom: '6px'}}>Your Name</p>
+          <input className='postcode-input'
+          style={{ width: '100%'}}
+          value={profileDraft.name}
+          onChange={(e) => setProfileDraft(prev => ({ ...prev, name: e.target.value}))}
+          placeholder='e.g. Mark'
+          />
+
+          <p className='search-card-label' style={{ marginTop: '18px', marginBottom: '6px'}}>Default Postcode</p>
+          <input className='postcode-input'
+          style={{ width: '100%'}}
+          value={profileDraft.postcode}
+          onChange={(e) => setProfileDraft(prev => ({ ...prev, postcode: e.target.value}))}
+          placeholder='e.g. BD1 1AA'
+          />
+
+          <p className='search-card-label' style={{ marginTop: '18px', marginBottom: '10px'}}>Dietary Preferences</p>
+          <div className='meal-options' style={{ flexWrap: 'wrap' }}>
+            {DIETARY_OPTIONS.map(option => (
+              <button
+              key={option}
+              className={`meal-btn ${profileDraft.dietary.includes(option) ? 'meal-btn-active' : ''}`}
+              onClick={() => handleToggleDietary(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+
+
+          {/* Save and Cancel button */}
+          <button className='search-button' style={{marginTop: '24px'}}
+          onClick={handleSaveProfile}>
+            Save Profile
+          </button>
+          <button className='save-button' style={{ marginTop: '10px'}}
+          onClick={() => {
+            setIsEditingProfile(false);
+            setProfileDraft({ ...profile});
+          }}>
+            Cancel
+          </button>
+
+        </div>
+      )}
+
+
 
       {isDrawerOpen && (
         <div className='drawer-overlay' onClick={() => setIsDrawerOpen(false)} />
