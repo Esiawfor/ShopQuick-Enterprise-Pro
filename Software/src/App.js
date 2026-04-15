@@ -4,7 +4,7 @@ import {useState, useEffect} from 'react';
 import { processShoppingRequest } from './logic/basketEngine';
 import './App.css'
 
-const AVATAR_OPTIONS = ['👩', '👨'];
+const AVATAR_OPTIONS = ['👩', '👨']; 
 
 const DIETARY_OPTIONS = ['Vegetarian', 'Vegan', 'Gluten-Free', 'Dairy-Free', 'Halal']
 function App() {
@@ -19,61 +19,93 @@ function App() {
   // we use this to show the comparing message
   const [loading, setLoading] = useState(false);
 
+  //mealType is either dinner, lunch or other, which we send to the backend to help it understand the user's needs better
+  //defaults to dinner, but user can change it with the buttons in the UI
   const [mealType, setMealType] = useState('dinner');
 
+  //savedLists is an array of the user's saved shopping lists, which are stored in local storage so they persist between sessions
+  // each entry has the form { id, mealType, query, result, savedAt }
   const [savedLists, setSavedLists] = useState([]);
 
+//isDrawerOpen is true when the saved lists drawer is open, false otherwise
+// we use this to show and hide the drawer when the user clicks the "Saved Lists" button or the close button
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 
-
+//profile stores the user's profile information, such as name, avatar, dietary preferences and default postcode
   const [profile, setProfile] = useState({
-    name: '',
-    avatar: '🧑',
-    dietary: [],
+    name: '', // we can add a name field to the profile, which the user can edit in the profile drawer
+    avatar: '🧑', // we can add an avatar field to the profile, which the user can choose from a set of emojis in the profile drawer
+    dietary: [], // we can add a dietary field to the profile, which is an array of dietary preferences that the user can select in the profile drawer
     postcode: 'BD1 1AA',
   });
 
+  //isProfileOpen is true when the profile drawer is open, false otherwise
+  // we use this to show and hide the drawer when the user clicks the profile button or the close button
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+//isEditingProfile is true when the user is editing their profile, false when they are just viewing it
+// we use this to switch between view mode and edit mode in the profile drawer, which show different UI and allow the user 
+// to edit their information when in edit mode
   const[isEditingProfile, setIsEditingProfile] = useState(false);
 
+  //profileDraft is a temporary state that holds the user's changes to their profile while they are editing it, so that 
+  // they can cancel their changes if they want to without affecting the actual profile until they click save
   const[profileDraft, setProfileDraft] = useState({ ...profile});
-  useEffect(() => {
-    const savedRaw = localStorage.getItem('shopquick_lists');
-    if(savedRaw) setSavedLists(JSON.parse(savedRaw));
+  useEffect(() => { // this runs when the component first loads, we use it to load any saved lists and profile information 
+                    // from local storage so that it persists between sessions
+    const savedRaw = localStorage.getItem('shopquick_lists'); // we can use a unique key like 'shopquick_lists' to store our data 
+                                                              //in local storage, to avoid conflicts with other data
+    if(savedRaw) setSavedLists(JSON.parse(savedRaw)); // if there is any saved data under that key, we parse it from JSON 
+                                                      // and set it to our state so we can use it in the UI
 
-    const savedProfile = localStorage.getItem('shopquick_profile');
-    if(savedProfile){
-      const parsed = JSON.parse(savedProfile);
-      setProfile(parsed);
-      setProfileDraft(parsed);
+// we do the same for the profile information, using a different key like 'shopquick_profile'
+    const savedProfile = localStorage.getItem('shopquick_profile'); 
+    if(savedProfile){// if there is saved profile data, we parse it and set it to both the profile and profileDraft states, 
+                    // so that the user can see their saved information and edit it if they want to
+      const parsed = JSON.parse(savedProfile); // we can also set the postcode state to the saved postcode if it exists, 
+                                              // so that the search box is pre-filled with their default postcode
+      setProfile(parsed); // we update the profile state with the saved information, so that it shows in the profile view
+      setProfileDraft(parsed);// we also update the profileDraft state with the same information, so that if the user clicks edit, 
+                              // they see their current information in the input fields
 
-      if (parsed.postcode) setPostcode(parsed.postcode);
+      if (parsed.postcode) setPostcode(parsed.postcode); // if there is a saved postcode in the profile, we set it to the postcode state, 
+                                                        // so that it shows in the search box and is used for searches
     }
   }, []);
 
-  const handleSaveProfile = () => {
-    setProfile(profileDraft);
-    localStorage.getItem('shopquick_profile', JSON.stringify(profileDraft));
-    if(profileDraft.postcode) setPostcode(profileDraft.postcode);
-    setIsEditingProfile(false);
+  const handleSaveProfile = () => { // this function runs when the user clicks the "Save Profile" button in the profile drawer, 
+                                    // it saves their changes to their profile
+    setProfile(profileDraft);// we update the actual profile state with the changes they made in the profileDraft, 
+                            // so that it shows in the profile view
+    localStorage.getItem('shopquick_profile', JSON.stringify(profileDraft)); // we also save the updated profile information to local 
+                                                                            // storage, so that it persists between sessions
+    if(profileDraft.postcode) setPostcode(profileDraft.postcode); // if the user updated their default postcode, we also update the 
+                                                                  // postcode state with the new value, so that it shows in the search 
+                                                                  // box and is used for searches
+    setIsEditingProfile(false); // after saving, we exit edit mode and go back to view mode in the profile drawer, 
+                                // so that the user can see their updated information without the input fields
   };
 
-  const handleToggleDietary = (option) => {
-    setProfileDraft(prev => {
-      const already = prev.dietary.includes(option);
-      return{
-        ...prev,
-        dietary: already ? prev.dietary.filter(d => d !== option) : [...prev.dietary, option],
+  const handleToggleDietary = (option) => { // this function runs when the user clicks on a dietary preference button in the profile 
+                                            // edit mode, it toggles that preference on or off in the profileDraft state
+    setProfileDraft(prev => {// we update the profileDraft state based on the previous state, to ensure we are working with the latest 
+                            // information
+      const already = prev.dietary.includes(option); // we check if the option that was clicked is already in the dietary array of the 
+                                                      // profileDraft, to know if we need to add it or remove it
+      return{ // we return a new profileDraft object with the same information as before, but with the dietary array updated based on 
+              // whether the option was already there or not
+        ...prev, // we spread the previous profileDraft to keep all the other information the same
+        dietary: already ? prev.dietary.filter(d => d !== option) : [...prev.dietary, option], // if the option was already in the 
+                                                              // dietary array, we create a new array without that option using filter,
       };
     });
   };
 
   const EXAMPLES = [
-    '£10',
-    '£20',
-    '£30 budget, milk, eggs and bread',
+    '£10', // we can have some example queries that the user can click on to quickly fill the search box and see how the app works,
+    '£20',// these examples can include different budgets, items and meal types to show the variety of requests the app can handle
+    '£30 budget, milk, eggs and bread',//
     'chicken, rice and pasta',
     'salmon, potatoes and peas',
     'bacon, eggs and butter'
@@ -88,87 +120,126 @@ function App() {
     //clear any previous results while the new search runs
     setResult(null);
     //adds a small delay to simulate the AI processing the request
-    setTimeout(() => {
+    setTimeout(() => { // after the delay, we call our backend function to process the shopping request, passing in the user's query 
+                      // and postcode
       //call our backend function with whatever the user typed
       const res = processShoppingRequest(query, postcode);
       //save the results so the UI can display it
       setResult(res);
       // turn off loading message now that have results
-      setLoading(false);
-    }, 1200);
+      setLoading(false); // we can adjust the delay time as needed to balance realism and responsiveness, but around 1-2 seconds is 
+                        // usually good for simulating AI processing without making the user wait too long
+    }, 1200); // we can adjust the delay time as needed to balance realism and responsiveness, but around 1-2 seconds is usually good 
+              // for simulating AI processing without making the user wait too long
   };
 
-  const handleExampleClick = (example) => {
-    setQuery(example);
+  const handleExampleClick = (example) => {// this function runs when the user clicks on one of the example chips, it fills the search 
+                                            // box with that example query so they can see how it works
+    setQuery(example);// we set the query state to the example that was clicked, which updates the search box with that text
   }
 
-  const handleReset = () => {
-    setQuery('');
-    setPostcode(profile.postcode || 'BD1 1AA');
-    setResult(null);
-    setLoading(false);
+  const handleReset = () => {// this function runs when the user clicks on the app title in the header, it resets the search box, 
+                            // postcode and results to start a new search
+    setQuery('');// we clear the query state to empty string, which clears the search box
+    setPostcode(profile.postcode || 'BD1 1AA');// we reset the postcode to the user's default postcode from their profile if it exists, 
+                                              // or back to the original default if not
+    setResult(null);// we clear the results state to null, which clears any displayed results and shows the empty state message
+    setLoading(false);// we also make sure to turn off loading in case it was on, so that the loading message doesn't show when we reset
   };
 
-  const handleSaveList = () => {
-    const newEntry = {
-      id: Date.now(),
-      mealType, query, result,
-      savedAt: new Date().toLocaleDateString('en-GB')
+  const handleSaveList = () => { // this function runs when the user clicks the "Save this list" button after getting results, it saves 
+                                  // their search query, meal type and results
+    const newEntry = {// we create a new entry object with the information we want to save about 
+                      // this search, including a unique id, the meal type,
+      id: Date.now(),// we can use the current timestamp as a simple unique id for each saved entry, since it's unlikely the user 
+                    // will save multiple lists in the same millisecond
+      mealType, query, result,// we save the meal type, query and result of this search, so that the user can see it in their 
+                              // saved lists and refer back to it later
+      savedAt: new Date().toLocaleDateString('en-GB')// we also save the date when this list was saved, so that the user can see 
+                                                    // when they saved it in their list of saved entries
     };
   
-    const updated = [newEntry, ...savedLists];
-    setSavedLists(updated);
-    localStorage.setItem('shopquick_lists', JSON.stringify(updated));
-    setIsDrawerOpen(true);
+    const updated = [newEntry, ...savedLists]; // we create a new array of saved lists with the new entry added to the beginning, 
+                                              // so that the most recent saves show up first
+    setSavedLists(updated);// we update the savedLists state with this new array, so that it shows in the UI 
+                          // and the user can see their saved list right away
+    localStorage.setItem('shopquick_lists', JSON.stringify(updated)); // we also save the updated list of saved entries to local 
+                                                          // storage, so that it persists between sessions and the user can see
+    setIsDrawerOpen(true);// after saving a new list, we automatically open the saved lists drawer so that the user 
+                          // can see their saved entry and access it easily
   };
   
-  const handleDeleteList = (idToDelete) => {
+  const handleDeleteList = (idToDelete) => { // this function runs when the user clicks the delete button on one of their saved lists 
+                                        // in the drawer, it removes that list from their saved entries
 
-    const updated = savedLists.filter((entry) => entry.id !== idToDelete);
+    const updated = savedLists.filter((entry) => entry.id !== idToDelete);// we create a new array of saved lists that excludes the entry with the id that was clicked for deletion,
+                                                // using the filter method to keep all entries except the one we want to delete
 
-    setSavedLists(updated);
+    setSavedLists(updated);// we update the savedLists state with this new array, so that the deleted entry is removed from the UI and 
+                          // the user can see their updated list of saved entries
 
-    localStorage.setItem('shopquick_lists', JSON.stringify(updated))
+    localStorage.setItem('shopquick_lists', JSON.stringify(updated))// we also save the updated list of saved entries to local storage, 
+    // so that the deletion persists between sessions and the user doesn't see the deleted entry when they come back later
     };
 
-  const [isListening, setIsListening] = useState(false);
+  const [isListening, setIsListening] = useState(false);// this state variable tracks whether the app is currently listening for 
+  // voice input, so we can update the UI accordingly (e.g. change the mic button color)
 
-  const handleVoiceInput = () => {
+  const handleVoiceInput = () => {// this function runs when the user clicks the mic button, it activates the Web Speech API 
+  // to listen for voice input and convert it to text
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;// we check if the browser supports the Web Speech API by looking for the SpeechRecognition object in the window,
+    // and also check for the webkitSpeechRecognition for compatibility with some browsers like Chrome
 
-    if (!SpeechRecognition) {
-      alert("Your browser doesn't support voice to text feature. Try Google Chrome instead. ")
+    if (!SpeechRecognition) {// if the browser doesn't support the Web Speech API, we alert the user and return early from the 
+                            // function to avoid errors
+      alert("Your browser doesn't support voice to text feature. Try Google Chrome instead. ")// we can also provide a link to the 
+                                      // Chrome download page in the alert message to help users get the right browser
     }
 
-    const recognition = new SpeechRecognition
+    const recognition = new SpeechRecognition// if the browser does support the Web Speech API, we create a new instance of the 
+                            // SpeechRecognition object to start using it for voice input
 
-    recognition.lang = 'en-GB';
+    recognition.lang = 'en-GB';// we can set the language of the speech recognition to English (UK) to better understand users in that region,
+    // and also because our example queries and responses are in English
 
-    recognition.continuous = false;
+    recognition.continuous = false;// we set continuous to false so that the recognition stops automatically after the user finishes 
+                                  // speaking,
 
-    recognition.interimResults = false;
+    recognition.interimResults = false;// we set interimResults to false so that we only get the final transcribed text after the user 
+                                        // finishes speaking,
 
-    recognition.start()
-    setIsListening(true);
+    recognition.start()// we start the speech recognition, which will prompt the user to allow microphone access and then listen 
+                        // for their voice input
+    setIsListening(true);// we set isListening to true to update the UI and indicate that the app is now listening for voice input
 
-    recognition.onresult = (event) => {
-      const spokenText = event.results[0][0].transcript;
-      setQuery(spokenText);
-      setIsListening(false);
+    recognition.onresult = (event) => {// this event handler runs when the speech recognition successfully transcribes the user's 
+                                    // voice input into text,
+      const spokenText = event.results[0][0].transcript;// we extract the transcribed text from the event object, 
+      // which is usually found in event.results[0][0].transcript for the first result
+      setQuery(spokenText);// we set the query state to the transcribed text, which updates the search box with what the user said
+      setIsListening(false);// we set isListening to false to update the UI and indicate that the app has stopped listening after 
+                            // getting the input
     }
 
-    recognition.onerror = () => {
-      setIsListening(false);
-      alert("Couldn't hear anything. Please check your microphone is on and working! ")
+    recognition.onerror = () => {// this event handler runs if there is an error during speech recognition, 
+                          // such as if the user doesn't allow microphone access or if there is a problem with the recognition process
+      setIsListening(false);// we set isListening to false to update the UI and indicate that the app has stopped 
+                      // trying to listen for voice input
+      alert("Couldn't hear anything. Please check your microphone is on and working! ")// we alert the user that there was an issue 
+                                      // with getting their voice input, and suggest they check their microphone settings to fix it
     }
 
-    recognition.onend = () => {
-      setIsListening(false);
+    recognition.onend = () => { // this event handler runs when the speech recognition service has stopped, either after 
+                                // successfully getting input or after an error
+      setIsListening(false);// we set isListening to false to update the UI and indicate that the app is no longer listening for  
+                              // voice input
     }
   }
-  return (
+  return ( // we return the JSX that defines the UI of our app, using the state variables and event handlers we defined 
+            // above to create an interactive experience for the user
     <>
+      /*   Header Section with title, subtitle and buttons for profile and saved lists   */
       <header className='app-header'>
         <h1 className='app-title' onClick={handleReset} style={{ cursor: 'pointer' }}>
             🛒 ShopQuick
@@ -212,7 +283,7 @@ function App() {
         </div>
       </div>
 
-
+          /*   Input group with postcode and query input, and voice input button   */
         <div className='input-group'>
           <input
           className='postcode-input'
@@ -276,7 +347,7 @@ function App() {
           </div>
       )}
 
-
+        /*   Results Section, shows the AI summary, list of items found and store comparison table   */
       {result && !loading && (
         <div className='results-section'>
 
@@ -299,7 +370,10 @@ function App() {
       </div>
     )}
 
-
+    /* we only show the store comparison table if there are any baskets in the results, which means the AI was able to find 
+    prices for some of the items and compare them across stores. If there are no baskets, it means the AI couldn't find any prices 
+    for the items, and we can show an error message instead. This way we avoid showing an empty or confusing table when there are 
+    no results to compare. */
     {result.baskets && result.baskets.length > 0 && (
       <div className='comparison-card'>
         <h2> Store Comparison</h2>
