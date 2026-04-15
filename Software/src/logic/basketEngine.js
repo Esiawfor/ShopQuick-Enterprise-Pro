@@ -3,7 +3,7 @@
 // It reads what the user typed, matches it to real products from our CSV data,
 // and compares prices across all stores.
 
-import { STORES, PRICES } from '../data/mockPrices';
+import { STORES, PRICES, STORE_DISTANCES } from '../data/mockPrices';
 
 // ─────────────────────────────────────────────
 // STEP 1: KEYWORD MAP
@@ -87,7 +87,8 @@ function matchItems(text) {
   const usedKeys = new Set(); // stops same product matching twice
 
   for (const [keyword, normalizedKeys] of Object.entries(KEYWORD_MAP)) {
-    if (!lowerText.includes(keyword)) continue;
+    const wordMatch = new RegExp(`\\b${keyword}\\b`);
+    if(!wordMatch.test(lowerText)) continue;
 
     // Try each possible normalized key until we find one that exists in the data
     for (const key of normalizedKeys) {
@@ -106,13 +107,22 @@ function matchItems(text) {
   return matchedItems;
 }
 
+function getDistance(storeId, postcode) {
+  const prefix = postcode.trim().toUpperCase().split(' ')[0];
+
+  const distances = STORE_DISTANCES[prefix] || STORE_DISTANCES['DEFAULT'];
+
+  return distances[storeId] ?? 5.0;
+}
+
 // ─────────────────────────────────────────────
 // STEP 4: Calculate total basket price per store
 // ─────────────────────────────────────────────
-function calcBaskets(items) {
-  return STORES.map(store => {
+function calcBaskets(items, postcode) {
+  const sorted = STORES.map(store => {
     let total = 0;
     let foundCount = 0;
+    const distance = getDistance(store.id, postcode);
 
     items.forEach(item => {
       const product = PRICES[store.id]?.[item.id];
@@ -126,17 +136,22 @@ function calcBaskets(items) {
       store,
       total: parseFloat(total.toFixed(2)),
       foundCount,
+      distance,
     };
   })
   // Only include stores that have at least one item
-  .filter(b => b.foundCount > 0)
+  .filter(b => b.foundCount === items.length)
   // Sort cheapest first
-  .sort((a, b) => a.total - b.total)
+  .sort((a, b) => a.total - b.total);
   // Add rank and how much extra vs cheapest
-  .map((b, i, arr) => ({
+
+  const closestDistance = [...sorted].sort((a, b) => a.distance - b.distance)[0].distance;
+
+  return sorted.map((b, i)  => ({
     ...b,
     rank: i + 1,
-    extra: parseFloat((b.total - arr[0].total).toFixed(2)),
+    extra: parseFloat((b.total - sorted[0].total).toFixed(2)),
+    extraDistance: parseFloat((b.distance - closestDistance).toFixed(1)),
   }));
 }
 
@@ -171,7 +186,7 @@ function buildSummary(items, baskets, budget) {
 // ─────────────────────────────────────────────
 // MAIN FUNCTION — called by App.js when button is clicked
 // ─────────────────────────────────────────────
-export function processShoppingRequest(query) {
+export function processShoppingRequest(query, postcode) {
   const budget = extractBudget(query);
   const items = matchItems(query);
 
@@ -184,7 +199,7 @@ export function processShoppingRequest(query) {
     };
   }
 
-  const baskets = calcBaskets(items);
+  const baskets = calcBaskets(items, postcode);
 
   return {
     success: true,
