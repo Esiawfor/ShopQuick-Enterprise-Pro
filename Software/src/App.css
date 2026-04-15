@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
-:root {
+
+/* Global Styles and Variables */
+:root { /* Color Palette */
   --orange-main: #FF6B00;
   --orange-light: #FF8C38;
   --orange-pale: #FFF3E8;
@@ -9,11 +11,13 @@
   --text-mid: #555;
   --white: #FFFFFF;
   --shadow: 0 4px 20px rgba(255, 107, 0, 0.15);
-  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.07);
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.07); /* Subtle shadow for cards */
   --radius: 14px;
   --radius-sm: 10px;
 }
 
+/* Reset and Base Styles*/
+/* Apply border-box sizing and reset margins/paddings */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
