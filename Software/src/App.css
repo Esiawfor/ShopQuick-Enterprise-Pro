@@ -12,8 +12,8 @@
   --white: #FFFFFF;
   --shadow: 0 4px 20px rgba(255, 107, 0, 0.15);
   --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.07); /* Subtle shadow for cards */
-  --radius: 14px;
-  --radius-sm: 10px;
+  --radius: 14px; /* Rounds corners for the larger elements */
+  --radius-sm: 10px; /*Rounds corners for the smaller elements*/
 }
 
 /* Reset and Base Styles*/
@@ -24,20 +24,43 @@
   padding: 0;
 }
 
+
+/*
+
+This is for the background of the whole page, this includes setting
+styles for fonts, background colour and different patterns
+
+*/
 body {
   font-family: 'Poppins', sans-serif;
   background-color: #FFF8F2;
   background-image: radial-gradient(circle, #FFDAB9 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-size: 24px 24px; /* Controls how much apart the dots are */
   color: var(--text-dark);
-  min-height: 100vh;
+  min-height: 100vh; /* This makes the background cover the full screen */
 }
+
+
+/*
+
+This make all the content be at the centre of the screen and
+makes sure it doesnt go too wide
+
+*/
 
 .app-wrapper {
   max-width: 760px;
   margin: 0 auto;
   padding: 28px 20px 60px;
 }
+
+
+/*
+
+This makes the banner at the top of the page orange, ::before and
+::after means that it will be placed inside the header and making it fit
+
+*/
 
 .app-header {
   background: linear-gradient(135deg, var(--orange-main) 0%, #FF9A3C 100%);
@@ -71,6 +94,12 @@ body {
   left: 10px;
 }
 
+
+/*
+
+This is for the ShopQuick name to be at the top of the screen
+
+*/
 .app-title{
   font-size: 2.4rem;
   font-weight: 800;
@@ -95,13 +124,20 @@ body {
   line-height: 1.5;
 }
 
+
+/*
+
+This search card style is for the white box that contains postcode,
+text areea and also search button
+
+*/
 .search-card {
   background: white;
   border-radius: var(--radius);
   padding: 28px;
   box-shadow: var(--shadow-card);
   margin-bottom: 24px;
-  border-top: 3px solid var(--orange-main);
+  border-top: 3px solid var(--orange-main); /* Orange line along the top */
 }
 
 .search-card-label {
@@ -109,10 +145,16 @@ body {
   font-weight: 700;
   color: var(--text-mid);
   margin-bottom: 18px;
-  text-transform: uppercase;
+  text-transform: uppercase; /* Makes all letters Caps */
   letter-spacing: 1px;
 }
 
+
+/*
+
+This arranges the postcode input and textarea
+
+*/
 .input-group {
   display: grid;
   grid-template-columns: 160px 1fr;
@@ -121,12 +163,19 @@ body {
   align-items: start;
 }
 
+/* This is so it fits the mobile screen*/
 @media (max-width: 480px) {
   .input-group {
     grid-template-columns: 1fr;
   }
 }
 
+
+/*
+
+Styles for the input fields, corners and borders included
+
+*/
 .postcode-input,
 .query-textarea {
   padding: 13px 16px;
@@ -136,11 +185,13 @@ body {
   font-family: 'Poppins', sans-serif;
   color: var(--text-dark);
   outline: none;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease, background 0.2s ease; /* Colour change whenever focusing */
   background: var(--orange-pale);
   width: 100%;
 }
 
+
+/* As mentioned before, when focusing, the user will see an orange ring */
 .postcode-input:focus,
 .query-textarea:focus {
   border-color: var(--orange-main);
@@ -178,15 +229,25 @@ body {
   gap: 8px;
 }
 
+
+/* Button will lift up just a bit when hovering over */
 .search-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(255, 107, 0, 0.5);
 }
 
+/* Button will push down when clicked on */
 .search-button:active {
   transform: translateY(0px);
 }
 
+
+/*
+
+Empty state is the white card that is shown before 
+the search is made
+
+*/
 .empty-state {
   background: white;
   border-radius: var(--radius);
@@ -196,14 +257,16 @@ body {
   animation: fadeIn 0.4s ease;
 }
 
+/* Large icon that bounces up and down */
 .empty-state-icon {
   font-size: 3rem;
   margin-bottom: 12px;
   animation: bounce 2s ease-in-out infinite;
 }
 
+/* Animation for the bounce */
 @keyframes bounce {
-  0%, 100% { transform: translateY(0); }
+  0%, 100% { transform: translateY(0); } /* This makes sure that it starts and ends at its original position */
   50% { transform: translateY(-6px); }
 }
 
@@ -249,6 +312,12 @@ body {
   transform: translateY(-1px);
 }
 
+/*
+
+This loading feature is shown when the prices are being collected.
+In this case, a spinning circle will be shown
+
+*/
 .loading-box {
   background: white;
   border-radius: var(--radius);
@@ -262,9 +331,15 @@ body {
   font-weight: 600;
   font-size: 0.95rem;
   margin-top: 12px;
-  animation: pulse 1.4s infinite;
+  animation: pulse 1.4s infinite; /* Text will fade in and out */
 }
 
+
+/*
+
+Spinning circle 
+
+*/
 .spinner {
   width: 40px;
   height: 40px;
@@ -275,6 +350,8 @@ body {
   margin: 0 auto;
 }
 
+
+/* Spinner will constantly rotate */
 @keyframes spin {
   to { transform: rotate(360deg);}
 }
@@ -316,6 +393,12 @@ body {
   color: var(--text-dark);
 }
 
+
+/*
+
+Style for how the wanted items are shown
+
+*/
 .items-card {
   background: white;
   border-radius: var(--radius);
@@ -346,7 +429,7 @@ body {
   font-weight: 600;
 }
 
-/* Comparison of all the stores */
+/* Comparison of all the stores and allows user to scroll throught the table*/
 .comparison-card {
   background: white;
   border-radius: var(--radius);
@@ -363,6 +446,13 @@ body {
   color: var(--text-dark);
 }
 
+
+/*
+
+The format for the price comparison table
+
+
+*/
 .store-table {
   width: 100%;
   border-collapse: collapse;
@@ -394,6 +484,11 @@ body {
   background: #FFF8F2;
 }
 
+/*
+
+This is for the numbered circles in the ranked column
+
+*/
 .rank-badge {
   display: inline-flex;
   align-items: center;
@@ -415,6 +510,12 @@ body {
   color: var(--text-mid);
 }
 
+
+/*
+
+Labels for the cheapest 
+
+*/
 .cheapest-label {
   background: var(--orange-main);
   color: white;
@@ -423,6 +524,7 @@ body {
   font-size: 0.75rem;
   font-weight: 700;
 }
+
 
 .extra-cost {
   color: #C0392B;
@@ -448,6 +550,12 @@ body {
   font-size: 1rem;
 }
 
+
+/*
+
+Shows red card for when theres no results shown
+
+*/
 .error-card {
   background: #FFF5F5;
   border: 2px solid #FFD5D5;
@@ -459,6 +567,12 @@ body {
 }
 
 
+/*
+
+Small microphone button so that the user can
+speak to chat
+
+*/
 .mic-button {
   position: absolute;
   top: 10px;
@@ -480,11 +594,23 @@ body {
   background: var(--orange-main);
 }
 
+
+/*
+
+The card will smoothly fade and show
+
+*/
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0);}
 }
 
+
+/*
+
+Row of buttons for the meal types: Dinner, Lunch or Other
+
+*/
 .meal-selector {
   margin-bottom: 20px;
 }
@@ -519,6 +645,12 @@ body {
   color: white;
 }
 
+/*
+
+Outline for the save button. Fills area with pale orange
+whenever hovering
+
+*/
 .save-button {
   width: 100%;
   padding: 13px;
@@ -537,6 +669,13 @@ body {
   background: var(--orange-pale);
 }
 
+
+/*
+
+This is for the saved lists area, uses a light blend so everything
+fits
+
+*/
 .drawer-trigger {
   background: rgba(255,255,255,0.2);
   border: 2px solid rgba(255,255,255,0.5);
@@ -560,6 +699,7 @@ body {
   background: rgba(255,255,255,0.3);
 }
 
+
 .saved-count {
   background: white;
   color: var(--orange-main);
@@ -569,6 +709,12 @@ body {
   font-weight: 700;
 }
 
+/*
+
+Darkens the page whenever the drawer is opened, transform is
+used to slide the drawer from the right
+
+*/
 .drawer-overlay {
   position: fixed;
   inset: 0;
@@ -625,6 +771,11 @@ body {
   line-height: 1.6;
 }
 
+/*
+
+For the saved shopping lists.
+
+*/
 .saved-entry {
   background: var(--orange-pale);
   border-radius: var(--radius-sm);
@@ -670,6 +821,12 @@ body {
   color: var(--orange-main);
 }
 
+
+/*
+
+Trash button to get rid of any saved entries
+
+*/
 .delete-btn {
   background: none;
   border: none;
