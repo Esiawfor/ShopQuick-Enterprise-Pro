@@ -12,7 +12,7 @@ Discussion:
 
 Tasks:
 •	Elias – Backend
-•	Fahd - UI/UX
+•	Fahd & Ian - UI/UX
 •	Ziean – Unit Testing setup
 •	Fida – Acceptance testing
 
