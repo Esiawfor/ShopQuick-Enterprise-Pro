@@ -506,7 +506,7 @@ function App() {
           </div>
           
           <button className='search-button' style={{ marginTop: '20px'}}
-          onClick={() => setIsEditingProfile(true)}> //
+          onClick={() => setIsEditingProfile(true)}> 
             Edit Profile
           </button>        
         </div>

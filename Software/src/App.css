@@ -83,12 +83,6 @@ body {
   line-height: 1.1;
 }
 
-.app-logo {
-  height: 60px;
-  width: auto;
-  cursor: pointer;
-  object-fit: contain;
-}
 
 .app-subtitle {
   margin-top: 10px;
